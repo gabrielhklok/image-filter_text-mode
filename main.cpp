@@ -5,6 +5,16 @@
 #include "opencv2/highgui.hpp"
 #include "filter.hpp"
 
+/**
+ *
+ * Software in text mode for apply image filter.
+ *
+ * @author Gabriel H. Klok
+ * @since 2018-04-01
+ * @version 1.0
+ *
+ */
+
 using namespace std;
 using namespace cv;
 
