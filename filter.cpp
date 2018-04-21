@@ -303,14 +303,14 @@ void Filter::outgoingPoints(Mat &imgIn, Mat &imgOut){
     for(int x = border; x < width-border; x++){
       pixel = 0;
 
-      for(int j = 0-border; j < 0+border; j++){
-        for(int i = 0-border; i < 0+border; i++){
-          pixel += validateRange(imgIn.at<Vec3b>(y+j,x+i)[0] * mask[j+border][i+border]); 
+      for(int j = 0-border; j <= 0+border; j++){
+        for(int i = 0-border; i <= 0+border; i++){
+          pixel += (imgIn.at<Vec3b>(y+j,x+i)[0] * mask[j+border][i+border]); 
         }
       }
-      imgOut.at<Vec3b>(y,x)[0] = pixel;
-      imgOut.at<Vec3b>(y,x)[1] = pixel;
-      imgOut.at<Vec3b>(y,x)[2] = pixel;
+      imgOut.at<Vec3b>(y,x)[0] = validateRange(pixel);
+      imgOut.at<Vec3b>(y,x)[1] = validateRange(pixel);
+      imgOut.at<Vec3b>(y,x)[2] = validateRange(pixel);
     }
   }
 }

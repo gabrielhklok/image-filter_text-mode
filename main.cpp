@@ -25,10 +25,18 @@ Mat choiceFilter(Filter*, Mat, int);
 void choiceKey(int, int&, bool&);
 
 int main(int argc, char** argv){
-  string parameter = argv[1];
+  string parameter;
+  string msgError = "Not found parameter. Please use command './main --help' for details.";
 
   Filter *filter = new Filter();
-  
+   
+  if(argc <= 1){
+    cout << msgError << endl;
+    return(-1);
+  }
+
+  parameter = argv[1];
+
   if(parameter.compare("-webcam") == 0){
 
     webcam(filter);
@@ -40,7 +48,8 @@ int main(int argc, char** argv){
   }else if(parameter.compare("--help") == 0){
     help();
   }else{
-    cout << "Not found parameter. Please use command '--help' for details." << endl;
+    cout << msgError << endl;
+    return(-1);
   }
 
   return(1);
@@ -93,7 +102,7 @@ void photo(Filter *filter, string urlImgIn, string urlImgOut, int key){
  *
  */
 Mat choiceFilter(Filter *filter, Mat frame, int key){
-  Mat frameResponse, frameHistogram;
+  Mat frameResponse, frameHistogram, frameTmp;
 
   switch(key){
     case 1:
@@ -127,8 +136,8 @@ Mat choiceFilter(Filter *filter, Mat frame, int key){
       break;
 
     case 7:
-      filter->thresholding(frame, 230, frameResponse);
-      filter->outgoingPoints(frameResponse, frameResponse);
+      filter->grayscale(frame, frameTmp);
+      filter->outgoingPoints(frameTmp, frameResponse);
       filter->histogram(frameResponse, frameHistogram);
       break;
 
@@ -192,7 +201,7 @@ void help(){
   cout << "./main [OPTION] [PARAM1] [PARAM2]" << endl;
   cout << endl;
   cout << endl;
-  cout << "./main -webcam         utiliza webcam" << endl;
-  cout << "./main -photo [URL-IMAGE-IN] [URL-IMAGE-OUT]" << endl;
+  cout << "./main -webcam                                     utiliza webcam" << endl;
+  cout << "./main -photo [URL-IMAGE-IN] [URL-IMAGE-OUT]       aplica o filtro em uma imagem" << endl;
 }
 
