@@ -14,13 +14,18 @@ using namespace cv;
  */
 Filter::Filter(){}
 
+
 /**
  *
  */
 Filter::~Filter(){}
 
+
 /**
+ * Transform image in grayscale, method simple, sum three channels and divide by three.
  *
+ * @param Mat &imgIn - Input image.
+ * @param Mat &imgOut - Output image.
  */
 void Filter::grayscaleSimple(Mat &imgIn, Mat &imgOut){  
   int gray;
@@ -40,8 +45,15 @@ void Filter::grayscaleSimple(Mat &imgIn, Mat &imgOut){
   }
 }
 
+
 /**
+ * Transform image in grayscale, method pondered, multiply the channels by the weights.
+ *    [CHANNEL RED] * 0.299
+ *    [CHANNEL GREEN] * 0.587
+ *    [CHANNEL BLUE] * 0.114
  *
+ * @param Mat &imgIn - Input image.
+ * @param Mat &imgOut - Output image.
  */
 void Filter::grayscale(Mat &imgIn, Mat &imgOut){
   int gray;  
@@ -52,7 +64,7 @@ void Filter::grayscale(Mat &imgIn, Mat &imgOut){
 
   for(int y = 0; y < height; y++){
     for(int x = 0; x < width; x++){
-      gray = ( 0.299*imgIn.at<Vec3b>(y,x)[0] + 0.587*imgIn.at<Vec3b>(y,x)[1] + 0.114*imgIn.at<Vec3b>(y,x)[2] );
+      gray = ( 0.114*imgIn.at<Vec3b>(y,x)[0] + 0.587*imgIn.at<Vec3b>(y,x)[1] + 0.299*imgIn.at<Vec3b>(y,x)[2] );
 
       imgOut.at<Vec3b>(y,x)[0] = gray;
       imgOut.at<Vec3b>(y,x)[1] = gray; 
@@ -61,8 +73,12 @@ void Filter::grayscale(Mat &imgIn, Mat &imgOut){
   }
 }
 
+
 /**
+ * Apply zoom out in image. 
  *
+ * @param Mat &imgIn - Input image.
+ * @param Mat &imgOut - Output image.
  */
 void Filter::zoomOut(Mat &imgIn, Mat &imgOut){
   Vec3f pixelOut;
@@ -85,8 +101,12 @@ void Filter::zoomOut(Mat &imgIn, Mat &imgOut){
   }    
 }
 
+
 /**
+ * Apply zoom in image.
  *
+ * @param Mat &imgIn - Input image.
+ * @param Mat &imgOut - Output image.
  */
 void Filter::zoomIn(Mat &imgIn, Mat &imgOut){
   int height = imgIn.size().height;
@@ -101,8 +121,13 @@ void Filter::zoomIn(Mat &imgIn, Mat &imgOut){
   }
 }
 
+
 /**
+ * Apply filter thresholding in image, based on '@param limit'.
  *
+ * @param Mat &imgIn - Input image.
+ * @param int limit - Limit for apply in image.
+ * @param Mat &imgOut - Output image.
  */
 void Filter::thresholding(Mat &imgIn, int limit, Mat &imgOut){
   int height = imgIn.size().height;
@@ -121,8 +146,12 @@ void Filter::thresholding(Mat &imgIn, int limit, Mat &imgOut){
   }
 }
 
+
 /**
+ * Apply filter negative in image.
  *
+ * @param Mat &imgIn - Input image.
+ * @param Mat &imgOut - Output image.
  */
 void Filter::negative(Mat &imgIn, Mat &imgOut){
   int height = imgIn.size().height;
@@ -141,7 +170,13 @@ void Filter::negative(Mat &imgIn, Mat &imgOut){
 
 
 /**
+ * Transform two image in one, adding both.
  *
+ * @param Mat &imgInA - Input image A.
+ * @param Mat &imgInB - Input image B.
+ * @param Mat &imgOut - Output image.
+ * @param int weightA - Weight to apply in image A.
+ * @param int weightB - Weight to apply in image B.
  */
 void Filter::addition(Mat &imgInA, Mat &imgInB, Mat &imgOut, int weightA, int weightB){
   int height = ( imgInA.size().height <= imgInB.size().height ) ? imgInA.size().height : imgInB.size().height;
@@ -157,6 +192,7 @@ void Filter::addition(Mat &imgInA, Mat &imgInB, Mat &imgOut, int weightA, int we
     }
   }
 }
+
 
 /**
  *
@@ -175,6 +211,7 @@ void Filter::subtraction(Mat &imgInA, Mat &imgInB, Mat &imgOut){
     }
   }
 }
+
 
 /**
  *
@@ -213,43 +250,19 @@ void Filter::incrementChannels(Mat &imgIn, Mat &imgOut, int red, int green, int 
   }
 }
 
-/*
-void histogram(Mat &imgIn, Mat &imgOut){
-  Mat imgIn;
-  int height, width, hist_h = 400, hist_w = 512;
-  int countChannels[3][255] = {{0}};
-
-  imgIn = imread(urlImgIn);
-  if(!imgIn.data){
-    msgResponse = this->msgResponseDefault + urlImgIn;
-  }else{
-    height = imgIn.size().height;
-    width = imgIn.size().width;
-
-    imgOut = Mat::zeros(hist_h, hist_w, CV_8UC3);
-    for(int y = 0; y < height; y++){
-      for(int x = 0; x < width; x++){
-        countChannels[0][ imgIn.at<Vec3b>(y,x)[0] ] += 1;
-        countChannels[1][ imgIn.at<Vec3b>(y,x)[1] ] += 1;
-        countChannels[2][ imgIn.at<Vec3b>(y,x)[2] ] += 1;
-      }
-    }
-  }
-}
-*/
 
 /**
  *
  */
 void Filter::histogram(Mat &imgIn, Mat &imgOut){
-   /// Separate the image in 3 places ( B, G and R )
+  /* Separate the image in 3 places ( B, G and R ) */
   vector<Mat> bgr_planes;
   split( imgIn, bgr_planes );
 
-  /// Establish the number of bins
+  /* Establish the number of bins */
   int histSize = 256;
 
-  /// Set the ranges ( for B,G,R) )
+  /* Set the ranges ( for B,G,R) ) */
   float range[] = { 0, 256 } ;
   const float* histRange = { range };
 
@@ -257,30 +270,30 @@ void Filter::histogram(Mat &imgIn, Mat &imgOut){
 
   Mat b_hist, g_hist, r_hist;
 
-  /// Compute the histograms:
+  /* Compute the histograms: */
   calcHist( &bgr_planes[0], 1, 0, Mat(), b_hist, 1, &histSize, &histRange, uniform, accumulate );
   calcHist( &bgr_planes[1], 1, 0, Mat(), g_hist, 1, &histSize, &histRange, uniform, accumulate );
   calcHist( &bgr_planes[2], 1, 0, Mat(), r_hist, 1, &histSize, &histRange, uniform, accumulate );
 
-  // Draw the histograms for B, G and R
+  /* Draw the histograms for B, G and R */
   int hist_w = 512; int hist_h = 400;
   int bin_w = cvRound( (double) hist_w/histSize );
 
   Mat histImage( hist_h, hist_w, CV_8UC3, Scalar( 0,0,0) );
 
-  /// Normalize the result to [ 0, histImage.rows ]
+  /* Normalize the result to [ 0, histImage.rows ] */
   normalize(b_hist, b_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
   normalize(g_hist, g_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
   normalize(r_hist, r_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
 
-  /// Draw for each channel
+  /* Draw for each channel */
   for( int i = 1; i < histSize; i++ ){
     line( histImage, Point( bin_w*(i-1), hist_h - cvRound(b_hist.at<float>(i-1)) ), Point( bin_w*(i), hist_h - cvRound(b_hist.at<float>(i)) ), Scalar( 255, 0, 0), 2, 8, 0  );
     line( histImage, Point( bin_w*(i-1), hist_h - cvRound(g_hist.at<float>(i-1)) ), Point( bin_w*(i), hist_h - cvRound(g_hist.at<float>(i)) ), Scalar( 0, 255, 0), 2, 8, 0  );
     line( histImage, Point( bin_w*(i-1), hist_h - cvRound(r_hist.at<float>(i-1)) ), Point( bin_w*(i), hist_h - cvRound(r_hist.at<float>(i)) ), Scalar( 0, 0, 255), 2, 8, 0  );
   }
 
-  /// Display
+  /* Display */
   namedWindow("Histograma", CV_WINDOW_AUTOSIZE );
   imshow("Histograma", histImage );
 }
