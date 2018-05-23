@@ -92,7 +92,6 @@ void photo(Filter *filter, string urlImgIn, string urlImgOut, int key){
     cout << "Can't open to image: " + urlImgIn << endl;
   }else{
 
-    //filter->negative(imgIn, imgOut);
     imshow("Photo", choiceFilter(filter, imgIn, key));
     waitKey(0);
   }
