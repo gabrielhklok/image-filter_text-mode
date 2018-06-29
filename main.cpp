@@ -140,6 +140,18 @@ Mat choiceFilter(Filter *filter, Mat frame, int key){
       filter->histogram(frameResponse, frameHistogram);
       break;
 
+    case 8:
+      filter->grayscale(frame, frameTmp);
+      filter->detectBordersRoberts(frameTmp, frameResponse);
+      filter->histogram(frameResponse, frameHistogram);
+      break;
+
+    case 9:
+      filter->grayscale(frame, frameTmp);
+      filter->detectBordersSobel(frameTmp, frameResponse);
+      filter->histogram(frameResponse, frameHistogram);
+      break;
+
     default:
       frameResponse = frame;
       filter->histogram(frameResponse, frameHistogram);
@@ -187,6 +199,14 @@ void choiceKey(int value, int &key, bool &loop){
 
     case 55:
       key = 7;
+      break;
+
+    case 56:
+      key = 8;
+      break;
+
+    case 57:
+      key = 9;
       break;
   }
 }

@@ -28,8 +28,10 @@ class Filter {
     void isolateChannels(Mat &imgIn, Mat &imgOut, bool red = false, bool green = false, bool blue = false);
     void incrementChannels(Mat &imgIn, Mat &imgOut, int red = 0, int green = 0, int blue = 0);
     void histogram(Mat &imgIn, Mat &imgOut);
-   // void outgoingPoints(Mat &imgIn, Mat &imgOut, int mask[][], int n);
     void outgoingPoints(Mat &imgIn, Mat &imgOut);
+    void detectBordersRoberts(Mat &imgIn, Mat &imgOut);
+    void detectBordersSobel(Mat &imgIn, Mat &imgOut);
+    void bgAdaptive(Mat &imgIn, Mat &imgOut);
 
   private:
     string msgResponseDefault;

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <math.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "opencv2/imgcodecs.hpp"
@@ -327,6 +328,74 @@ void Filter::outgoingPoints(Mat &imgIn, Mat &imgOut){
     }
   }
 }
+
+
+/**
+ *
+ */
+void Filter::detectBordersRoberts(Mat &imgIn, Mat &imgOut){
+  int height = imgIn.size().height;
+  int width = imgIn.size().width;
+  int pixel;
+
+  imgOut = Mat::zeros(height, width, CV_8UC3);
+
+  for(int y = 0; y < height - 1; y++){
+    for(int x = 0; x < width - 1; x++){
+      pixel = sqrt(pow( imgIn.at<Vec3b>(y, x+1)[0] - imgIn.at<Vec3b>(y+1, x)[0],2) + pow( imgIn.at<Vec3b>(y, x)[0] - imgIn.at<Vec3b>(y+1, x+1)[0],2));
+      imgOut.at<Vec3b>(y,x)[0] = validateRange(pixel);
+      imgOut.at<Vec3b>(y,x)[1] = validateRange(pixel);
+      imgOut.at<Vec3b>(y,x)[2] = validateRange(pixel);
+    }
+  }
+}
+
+
+/**
+ *
+ */
+void Filter::detectBordersSobel(Mat &imgIn, Mat &imgOut){
+  int height = imgIn.size().height;
+  int width = imgIn.size().width;
+  int pixel;
+
+  imgOut = Mat::zeros(height, width, CV_8UC3);
+
+  for(int y = 1; y < height - 1; y++){
+    for(int x = 1; x < width - 1; x++){
+      pixel = abs(
+                abs(  (imgIn.at<Vec3b>(y-1, x-1)[0] - imgIn.at<Vec3b>(y+1, x-1)[0]) + 
+                      (2*imgIn.at<Vec3b>(y-1, x)[0] - 2*imgIn.at<Vec3b>(y+1, x)[0]) + 
+                      (imgIn.at<Vec3b>(y-1, x+1)[0] - imgIn.at<Vec3b>(y+1, x+1)[0])) + 
+                abs(  (imgIn.at<Vec3b>(y-1, x-1)[0] - imgIn.at<Vec3b>(y-1, x+1)[0]) + 
+                      (2*imgIn.at<Vec3b>(y, x-1)[0] - 2*imgIn.at<Vec3b>(y, x+1)[0]) + 
+                      (imgIn.at<Vec3b>(y+1, x-1)[0] - imgIn.at<Vec3b>(y+1, x+1)[0]) ));
+
+      imgOut.at<Vec3b>(y,x)[0] = validateRange(pixel);
+      imgOut.at<Vec3b>(y,x)[1] = validateRange(pixel);
+      imgOut.at<Vec3b>(y,x)[2] = validateRange(pixel);
+    }
+  }
+}
+
+
+/**
+ *
+ */
+void Filter::bgAdaptive(Mat &imgIn, Mat &imgOut){
+  int height = imgIn.size().height;
+  int widht = imgIn.size().width;
+  int pixel;
+
+  imgOut = Mat::zeros(height, width, CV_8UC3);
+
+  for(int y = 0; y < height; y++){
+    for(int x = 0; x < width; x++){
+      
+    }
+  }
+}
+
 
 /**
  *
