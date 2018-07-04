@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <queue>
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "filter.hpp"
@@ -41,6 +42,10 @@ int main(int argc, char** argv){
 
     webcam(filter);
 
+  }else if(parameter.compare("-webcam-bg") == 0){
+
+    webcamBG(filter);
+
   }else if(parameter.compare("-photo") == 0){
 
     photo(filter, argv[2], argv[3], atoi(argv[4]));
@@ -80,6 +85,52 @@ void webcam(Filter *filter){
     choiceKey(waitKey(1), key, loop);
   }
 }
+
+
+/**
+ *
+ */
+void webcamBG(Filter *filter){
+  int aux = 1;
+  bool loop = true;
+  VideoCapture cap(0);
+  queue<Filter> frames;
+
+  if (!cap.isOpened()){
+    cout << "Can't open camera!" << endl;
+  }
+
+  while(loop){
+    Mat frame;
+
+    cap >> frame;
+    if (frame.empty())
+      break;
+
+    if(aux < 10){
+      frames.push(frame);
+      aux++;
+    }else{
+      frames.push(frame);
+      imshow("Webcam", mergeFrames());
+      frames.pop();
+    }
+    
+  }
+}
+
+
+/**
+ *
+ */
+Mat mergeFrames(){
+  Mat frameResponse;
+
+   
+
+  return frameResponse;
+}
+
 
 /**
  *
@@ -152,6 +203,12 @@ Mat choiceFilter(Filter *filter, Mat frame, int key){
       filter->histogram(frameResponse, frameHistogram);
       break;
 
+    case 10:
+      filter->grayscale(frame, frameTmp);
+      filter->detectBorderRobinson(frameTmp, frameResponse);
+      filter->histogram(frameResponse, frameHistogram);
+      break;      
+
     default:
       frameResponse = frame;
       filter->histogram(frameResponse, frameHistogram);
@@ -169,45 +226,50 @@ void choiceKey(int value, int &key, bool &loop){
       loop = false;
       break;
 
-    case 48:
+    case 48: //0
       key = 0;
       break;
 
-    case 49:
+    case 49: //1
       key = 1;
       break;
 
-    case 50:
+    case 50: //2
       key = 2;
       break;
     
-    case 51:
+    case 51: //3
       key = 3;
       break;
 
-    case 52:
+    case 52: //4
       key = 4;
       break;
   
-    case 53:
+    case 53: //5
       key = 5;
       break;
 
-    case 54:
+    case 54: //6
       key = 6;
       break;
 
-    case 55:
+    case 55: //7
       key = 7;
       break;
 
-    case 56:
+    case 56: //8
       key = 8;
       break;
 
-    case 57:
+    case 57: //9
       key = 9;
       break;
+
+    case 113: //q
+      key = 10;
+      break;
+
   }
 }
 

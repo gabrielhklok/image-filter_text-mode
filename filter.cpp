@@ -382,9 +382,70 @@ void Filter::detectBordersSobel(Mat &imgIn, Mat &imgOut){
 /**
  *
  */
+void Filter::detectBorderRobinson(Mat &imgIn, Mat &imgOut){
+  int height = imgIn.size().height;
+  int width = imgIn.size().width;
+  int pixels[8];
+  int pixel = 0;
+
+  imgOut = Mat::zeros(height, width, CV_8UC3);
+
+  for(int y = 1; y < height - 1; y++){
+    for(int x = 1; x < width -1; x++){
+      
+      pixels[0] = abs((imgIn.at<Vec3b>(y-1, x-1)[0] - imgIn.at<Vec3b>(y+1, x-1)[0]) + 
+                  (2*(imgIn.at<Vec3b>(y-1, x)[0]) - 2*(imgIn.at<Vec3b>(y+1, x)[0])) + 
+                  (imgIn.at<Vec3b>(y-1, x+1)[0] - imgIn.at<Vec3b>(y+1, x+1)[0]));
+
+      pixels[1] = abs((imgIn.at<Vec3b>(y+1, x-1)[0] - imgIn.at<Vec3b>(y-1, x-1)[0]) +
+                  (2*(imgIn.at<Vec3b>(y+1, x)[0]) - 2*(imgIn.at<Vec3b>(y-1, x)[0])) +
+                  (imgIn.at<Vec3b>(y+1, x+1)[0] - imgIn.at<Vec3b>(y-1, x+1)[0]));
+
+      pixels[2] = abs(( 2*(imgIn.at<Vec3b>(y-1, x-1)[0]) - 2*(imgIn.at<Vec3b>(y+1, x+1)[0]) ) +
+                  (imgIn.at<Vec3b>(y-1, x)[0] - imgIn.at<Vec3b>(y, x+1)[0]) +
+                  (imgIn.at<Vec3b>(y, x-1)[0] - imgIn.at<Vec3b>(y+1, x)[0]));
+
+      pixels[3] = abs((2*(imgIn.at<Vec3b>(y+1, x+1)[0]) - 2*(imgIn.at<Vec3b>(y-1, x-1)[0])) +
+                  (imgIn.at<Vec3b>(y, x+1)[0] - imgIn.at<Vec3b>(y-1, x)[0]) +
+                  (imgIn.at<Vec3b>(y+1, x)[0] - imgIn.at<Vec3b>(y, x-1)[0]));
+
+      pixels[4] = abs((imgIn.at<Vec3b>(y-1, x-1)[0] - imgIn.at<Vec3b>(y-1, x+1)[0]) +
+                  (2*(imgIn.at<Vec3b>(y, x-1)[0]) - 2*(imgIn.at<Vec3b>(y, x+1)[0])) +
+                  (imgIn.at<Vec3b>(y+1, x-1)[0] - imgIn.at<Vec3b>(y+1, x+1)[0]));
+
+      pixels[5] = abs((imgIn.at<Vec3b>(y-1, x+1)[0] - imgIn.at<Vec3b>(y-1, x-1)[0]) +
+                  (2*(imgIn.at<Vec3b>(y, x+1)[0]) - 2*(imgIn.at<Vec3b>(y, x-1)[0])) +
+                  (imgIn.at<Vec3b>(y+1, x+1)[0] - imgIn.at<Vec3b>(y+1, x-1)[0]));
+
+      pixels[6] = abs((imgIn.at<Vec3b>(y, x-1)[0] - imgIn.at<Vec3b>(y-1, x)[0]) +
+                  (2*(imgIn.at<Vec3b>(y+1, x-1)[0]) - 2*(imgIn.at<Vec3b>(y-1, x+1)[0])) +
+                  (imgIn.at<Vec3b>(y+1, x)[0] - imgIn.at<Vec3b>(y, x+1)[0]));
+
+      pixels[7] = abs((imgIn.at<Vec3b>(y-1, x)[0] - imgIn.at<Vec3b>(y, x-1)[0]) +
+                  (2*(imgIn.at<Vec3b>(y-1, x+1)[0]) - 2*(imgIn.at<Vec3b>(y+1, x-1)[0])) +
+                  (imgIn.at<Vec3b>(y, x+1)[0] - imgIn.at<Vec3b>(y+1, x)[0]));
+
+      for(int i = 0; i < 8; i++){
+        if(pixels[i] > pixel){
+          pixel = pixels[i];
+        }
+      }
+
+      imgOut.at<Vec3b>(y,x)[0] = validateRange(pixel);
+      imgOut.at<Vec3b>(y,x)[1] = validateRange(pixel);
+      imgOut.at<Vec3b>(y,x)[2] = validateRange(pixel);
+
+      pixel = 0;
+    }
+  }
+}
+
+/**
+ *
+ */
 void Filter::bgAdaptive(Mat &imgIn, Mat &imgOut){
   int height = imgIn.size().height;
-  int widht = imgIn.size().width;
+  int width = imgIn.size().width;
   int pixel;
 
   imgOut = Mat::zeros(height, width, CV_8UC3);
@@ -403,37 +464,3 @@ void Filter::bgAdaptive(Mat &imgIn, Mat &imgOut){
 int Filter::validateRange(int channel){
   return (channel > 255) ? 255 : (channel < 0) ? 0 : channel;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

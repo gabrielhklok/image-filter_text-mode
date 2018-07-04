@@ -31,6 +31,7 @@ class Filter {
     void outgoingPoints(Mat &imgIn, Mat &imgOut);
     void detectBordersRoberts(Mat &imgIn, Mat &imgOut);
     void detectBordersSobel(Mat &imgIn, Mat &imgOut);
+    void detectBorderRobinson(Mat &imgIn, Mat &imgOut);
     void bgAdaptive(Mat &imgIn, Mat &imgOut);
 
   private:
